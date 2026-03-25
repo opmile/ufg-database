@@ -3,7 +3,7 @@
 ## Definição
 > **SGBD é um software de propósito geral que apoia usuários na criação e manutenção de bancos de dados.**
 
-> **O SGBD é de propósito geral. Os metadados são de propósito específico.**
+> **O SGBD é de propósito geral (porque ele não é construído para uma aplicação específica). Os metadados são de propósito específico (porque descrevem exatamente a estrutura dos dados que o SGBD gerencia).**
 
 ---
 
@@ -51,7 +51,9 @@
 
 ---
 
-## Escalonamento de Transações
+## Escalonamento de Transações (schedule)
+
+O escalonamento em bancos de dados define a ordem de execução das operações de transações concorrentes.
 
 ### Tipos de Escalonamento
 
@@ -76,6 +78,12 @@ Todos os Escalonamentos
          │                   │
          │                   └──▶ Seriais
 ```
+
+**Escalonamento Serial**: Garante a consistência do banco de dados (preserva a atomicidade e isolamento), mas desempenho é ruim, pois não aproveita a capacidade de processamento paralelo.
+
+**Escaonamento Não-Serial**: Maior concorrência, melhor utilização de CPU e menor tempo de espera, mas pode causar inconsistências se não for gerenciado corretamente (ex: leitura suja, perda de atualização).
+
+**Escalonamento Serializável**: É um tipo de escalonamento não-serial que produz o mesmo resultado final que algum escalonamento serial. É a forma ideal de obter alto desempenho com a consistência de um plano serial.
 
 ---
 

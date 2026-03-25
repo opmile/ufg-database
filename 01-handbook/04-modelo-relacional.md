@@ -19,6 +19,10 @@
 | **Grau** | Aridade | Número de atributos (n) |
 | **Cardinalidade** | - | Número de tuplas |
 
+Um conjunto de tuplas em banco de dados relacional representa o conteúdo de uma tabela (relação), onde cada tupla é uma linha (registro) única, composta por atributos (colunas) que descrevem uma entidade.
+
+Uma entidade em um banco de dados é um objeto, conceito ou evento do "mundo real" sobre o qual dados são armazenados, representado como uma tabela no modelo relacional
+
 ---
 
 ## Notação Formal
@@ -96,6 +100,8 @@ Chave Primária: Matricula
 - [ ] Chave candidata
 - [ ] Chave primária
 - [ ] Chave estrangeira
+
+Chave Primária (PK) identifica de forma única e exclusiva cada registro em uma tabela (não nula, única), como o ID_CLIENTE. Chave Estrangeira (FK) é um campo que referencia a PK de outra tabela, criando relacionamentos e garantindo a integridade referencial. Garante que o valor na tabela "filha" corresponda a uma PK válida na tabela "pai", a FK pode ter valores repetidos (um cliente pode fazer vários pedidos).
 
 ---
 
