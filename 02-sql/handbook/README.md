@@ -14,6 +14,7 @@
 | [05-checklist-prova](./05-checklist-prova.md) | Pegadinhas, V/F, padrões de questão | 10 min |
 | [06-handson](./06-handson.md) | **BD Empresa do zero: CREATE + INSERT + 30+ queries guiadas** | 60+ min |
 | [07-psql-cli](./07-psql-cli.md) | psql via terminal — meta-comandos, dump, EXPLAIN, atalhos | 15 min |
+| [08-docker](./08-docker.md) | PostgreSQL em container — docker run, compose, pgAdmin junto | 15 min |
 
 ## Ordem de Leitura
 
