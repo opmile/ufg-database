@@ -163,14 +163,26 @@ SELECT ALL Salario FROM FUNCIONARIO;    -- ALL explícito
 
 ## Funções de String e Data (varia por SGBD)
 
-| Função (MariaDB) | Função (PostgreSQL) | O que faz |
-|------------------|----------------------|-----------|
-| `CONCAT(a, b, c)` | `a \|\| b \|\| c` ou `CONCAT(...)` | Concatena |
-| `CHAR_LENGTH(s)` | `CHAR_LENGTH(s)` ou `LENGTH(s)` | Tamanho da string |
-| `UPPER(s)` / `LOWER(s)` | Igual | Caixa |
-| `NOW()` | `NOW()` ou `CURRENT_TIMESTAMP` | Data/hora atual |
-| `YEAR(d)` | `EXTRACT(YEAR FROM d)` | Extrai ano |
-| `MONTH(d)` / `DAY(d)` | `EXTRACT(MONTH FROM d)` | Extrai mês/dia |
+| O que faz | MariaDB | PostgreSQL | SQLite (hands-on) |
+|-----------|---------|------------|--------------------|
+| Concatena | `CONCAT(a,b,c)` | `a \|\| b` ou `CONCAT(...)` | `a \|\| b \|\| c` |
+| Tamanho da string | `CHAR_LENGTH(s)` | `CHAR_LENGTH(s)` ou `LENGTH(s)` | `LENGTH(s)` |
+| Caixa alta/baixa | `UPPER(s)`/`LOWER(s)` | Igual | Igual |
+| Data/hora atual | `NOW()` | `NOW()` / `CURRENT_TIMESTAMP` | `datetime('now')` |
+| Ano de uma data | `YEAR(d)` | `EXTRACT(YEAR FROM d)` | `strftime('%Y', d)` |
+| Mês / dia | `MONTH(d)` / `DAY(d)` | `EXTRACT(MONTH FROM d)` | `strftime('%m', d)` |
+
+### Exemplo SQLite (compatível com DB Browser)
+
+```sql
+SELECT
+    Pnome || ' ' || Minicial || ' ' || Unome AS 'Nome Completo',
+    LENGTH(Pnome) AS 'Tamanho Pnome',
+    Datanasc
+FROM FUNCIONARIO;
+```
+
+### Exemplo padrão MariaDB (cai na prova)
 
 ```sql
 SELECT
@@ -179,6 +191,8 @@ SELECT
     Datanasc
 FROM FUNCIONARIO;
 ```
+
+> **Pra prova:** decora a sintaxe **MariaDB** (`CONCAT`, `CHAR_LENGTH`, `YEAR(...)`) — é o que o professor usa. SQLite é pra prática local.
 
 ---
 

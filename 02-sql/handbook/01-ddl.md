@@ -128,6 +128,24 @@ FK só pode referenciar tabela que **já existe**. Logo:
 
 ---
 
+## ⚠️ SQLite — Limitações de DDL
+
+SQLite (usado no hands-on) tem ALTER TABLE bem **restrito**:
+
+| Comando | SQLite | Padrão (Postgres/MariaDB) |
+|---------|--------|----------------------------|
+| `ALTER TABLE ... ADD COLUMN` | ✅ | ✅ |
+| `ALTER TABLE ... DROP COLUMN` | ✅ (3.35+) | ✅ |
+| `ALTER TABLE ... ADD CONSTRAINT` | ❌ **NÃO** | ✅ |
+| `ALTER TABLE ... DROP CONSTRAINT` | ❌ **NÃO** | ✅ |
+| `ALTER TABLE ... ALTER COLUMN TYPE` | ❌ **NÃO** | ✅ |
+
+**Workaround SQLite:** toda constraint precisa entrar no `CREATE TABLE`. Pra alterar constraint depois, tem que recriar a tabela (CREATE nova → INSERT SELECT da antiga → DROP antiga → RENAME).
+
+> Mas pra **prova**, escreve a sintaxe ANSI (com ALTER ADD CONSTRAINT) — é o padrão. SQLite é só pra prática local.
+
+---
+
 ## Erros Comuns
 
 | ❌ Erro | ✅ Correto |

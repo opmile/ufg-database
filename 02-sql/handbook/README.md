@@ -37,9 +37,33 @@
 2. Vai pro hands-on **rodando cada bloco** no SQLite Online (MariaDB ou PostgreSQL).
 3. Revisa checklist na véspera.
 
-## Ferramenta recomendada
+## Ferramenta recomendada (desktop)
 
-- **SQLite Online:** https://sqliteonline.com/ → MariaDB ou PostgreSQL (clique "click to connect").
-- Cola o bloco de `06-handson.md` → ➤Run.
+**SQLite + DB Browser for SQLite** (local, sem internet):
+
+### Instalação no macOS
+
+```bash
+brew install --cask db-browser-for-sqlite
+```
+
+Ou baixa o `.dmg` em https://sqlitebrowser.org/dl/
+
+### Como usar
+
+1. Abre **DB Browser for SQLite**.
+2. **File → New Database** → escolhe nome (ex: `bd_empresa.db`) e local. Salva.
+3. Aparece dialog "Edit table definition" → **Cancela** (vamos criar via SQL).
+4. Vai pra aba **Execute SQL**.
+5. Cola o bloco SETUP de `06-handson.md` → clica ▶ (ou F5).
+6. **File → Write Changes** (Ctrl/Cmd+S) pra salvar.
+7. Cada query nova: cola na aba SQL → ▶. Pra ver tabela: aba **Browse Data** → seleciona tabela no dropdown.
+
+### Notas SQLite
+
+- SQLite é dinamicamente tipado — `VARCHAR(20)` vira `TEXT`, `NUMERIC(10,2)` vira `REAL/NUMERIC`. **Aceita a sintaxe** do padrão ANSI, então funciona pra estudo.
+- FK só é enforced se `PRAGMA foreign_keys = ON` — incluído no setup.
+- `ALTER TABLE ADD CONSTRAINT` **NÃO existe em SQLite** — declare constraint na CREATE.
+- `DROP TABLE ... CASCADE` **NÃO existe** — drop em ordem reversa.
 
 > **Foco da avaliação:** escrever consultas SQL corretas. Não decorar derivação de álgebra. Saber resolver com SQL = ponto.

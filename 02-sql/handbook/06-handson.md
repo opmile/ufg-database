@@ -1,15 +1,29 @@
-# Hands-On — BD Empresa do Zero
+# Hands-On — BD Empresa do Zero (SQLite + DB Browser)
 
-> **Objetivo:** rodar tudo de SQL no SGBD, **vendo o resultado de cada query**, do mais básico ao mais cobrado. Use [SQLite Online](https://sqliteonline.com/) → **PostgreSQL** (recomendado) ou **MariaDB**.
+> **Objetivo:** rodar tudo de SQL **localmente**, vendo resultado de cada query, do básico ao mais cobrado. Ferramenta: **DB Browser for SQLite**.
+
+## Setup do ambiente
+
+```bash
+brew install --cask db-browser-for-sqlite
+```
+
+Ou baixa de https://sqlitebrowser.org/dl/
 
 ## Como usar este arquivo
 
-1. Abre [sqliteonline.com](https://sqliteonline.com/), clica em **PostgreSQL** (esquerda), depois **click to connect**.
-2. Cola o bloco **Setup** uma vez. Run.
-3. Cola cada bloco de query individualmente. Lê a pergunta antes, **tenta prever o resultado**, então roda.
-4. Se algo quebrar — releia a query, identifica o erro. Não passa pro próximo sem entender.
+1. Abre **DB Browser for SQLite**.
+2. **File → New Database** → nomeia `bd_empresa.db`. Salva.
+3. Dialog "Edit table definition" → **Cancel**.
+4. Aba **Execute SQL**.
+5. Cola o bloco **Setup** abaixo. ▶ (ou F5).
+6. **File → Write Changes** (Cmd+S) pra persistir.
+7. Cada query: limpa editor, cola, ▶. Lê pergunta antes — **tenta prever resultado**.
+8. Pra ver tabela inteira sem SQL: aba **Browse Data** → seleciona no dropdown.
 
-> **Se quiser zerar e refazer:** roda o bloco Setup de novo (tem `DROP TABLE IF EXISTS` no início).
+> **Zerar tudo:** roda o bloco Setup de novo (`DROP TABLE IF EXISTS` no começo).
+
+> **Notas SQLite:** tipos `VARCHAR/CHAR/NUMERIC` são aceitos por compatibilidade ANSI mas internamente viram `TEXT/REAL`. `ALTER TABLE ADD CONSTRAINT` não existe — toda constraint vai inline na CREATE. FK só é aplicada com `PRAGMA foreign_keys = ON` (incluído).
 
 ---
 
@@ -19,27 +33,32 @@ Cola tudo isso de uma vez:
 
 ```sql
 -- ============================================================
--- LIMPEZA (drop em ordem reversa pra não violar FK)
+-- SQLite: desliga FK durante DROP/CREATE pra evitar erro de ordem
 -- ============================================================
-DROP TABLE IF EXISTS DEPENDENTE      CASCADE;
-DROP TABLE IF EXISTS TRABALHA_EM     CASCADE;
-DROP TABLE IF EXISTS PROJETO         CASCADE;
-DROP TABLE IF EXISTS LOCALIZACAO_DEP CASCADE;
-DROP TABLE IF EXISTS FUNCIONARIO     CASCADE;
-DROP TABLE IF EXISTS DEPARTAMENTO    CASCADE;
+PRAGMA foreign_keys = OFF;
+
+-- LIMPEZA (drop em ordem reversa)
+DROP TABLE IF EXISTS DEPENDENTE;
+DROP TABLE IF EXISTS TRABALHA_EM;
+DROP TABLE IF EXISTS PROJETO;
+DROP TABLE IF EXISTS LOCALIZACAO_DEP;
+DROP TABLE IF EXISTS FUNCIONARIO;
+DROP TABLE IF EXISTS DEPARTAMENTO;
 
 -- ============================================================
 -- DDL — Criação das tabelas
+-- (SQLite permite FK "forward reference" — tabela referenciada
+--  pode não existir no momento da CREATE; checa só no INSERT.)
 -- ============================================================
 
--- Cria DEPARTAMENTO sem FK pro gerente (FK circular — resolve depois)
 CREATE TABLE DEPARTAMENTO (
-    Dnumero              INT          NOT NULL,
-    Dnome                VARCHAR(20)  NOT NULL,
+    Dnumero              INTEGER       NOT NULL,
+    Dnome                VARCHAR(20)   NOT NULL,
     Cpf_gerente          CHAR(11),
     Data_inicio_gerente  DATE,
     PRIMARY KEY (Dnumero),
-    UNIQUE (Dnome)
+    UNIQUE (Dnome),
+    FOREIGN KEY (Cpf_gerente) REFERENCES FUNCIONARIO(Cpf)
 );
 
 CREATE TABLE FUNCIONARIO (
@@ -52,30 +71,25 @@ CREATE TABLE FUNCIONARIO (
     Sexo            CHAR(1),
     Salario         NUMERIC(10,2),
     Cpf_supervisor  CHAR(11),
-    Dnr             INT           NOT NULL,
+    Dnr             INTEGER       NOT NULL,
     PRIMARY KEY (Cpf),
     FOREIGN KEY (Cpf_supervisor) REFERENCES FUNCIONARIO(Cpf),
     FOREIGN KEY (Dnr)            REFERENCES DEPARTAMENTO(Dnumero),
     CHECK (Sexo IN ('M', 'F'))
 );
 
--- Agora resolve FK circular: gerente do departamento
-ALTER TABLE DEPARTAMENTO
-    ADD CONSTRAINT FK_DEPTO_GERENTE
-        FOREIGN KEY (Cpf_gerente) REFERENCES FUNCIONARIO(Cpf);
-
 CREATE TABLE LOCALIZACAO_DEP (
-    Dnumero  INT          NOT NULL,
+    Dnumero  INTEGER      NOT NULL,
     Dlocal   VARCHAR(20)  NOT NULL,
     PRIMARY KEY (Dnumero, Dlocal),
     FOREIGN KEY (Dnumero) REFERENCES DEPARTAMENTO(Dnumero)
 );
 
 CREATE TABLE PROJETO (
-    Projnumero  INT          NOT NULL,
+    Projnumero  INTEGER      NOT NULL,
     Projnome    VARCHAR(20)  NOT NULL,
     Projlocal   VARCHAR(20),
-    Dnum        INT          NOT NULL,
+    Dnum        INTEGER      NOT NULL,
     PRIMARY KEY (Projnumero),
     UNIQUE (Projnome),
     FOREIGN KEY (Dnum) REFERENCES DEPARTAMENTO(Dnumero)
@@ -83,7 +97,7 @@ CREATE TABLE PROJETO (
 
 CREATE TABLE TRABALHA_EM (
     Fcpf   CHAR(11)      NOT NULL,
-    Pnr    INT           NOT NULL,
+    Pnr    INTEGER       NOT NULL,
     Horas  NUMERIC(4,1),
     PRIMARY KEY (Fcpf, Pnr),
     FOREIGN KEY (Fcpf) REFERENCES FUNCIONARIO(Cpf),
@@ -171,7 +185,12 @@ INSERT INTO DEPENDENTE VALUES
     ('12345678966', 'Michael',   'M', '1988-01-04', 'Filho'),
     ('12345678966', 'Alice',     'F', '1988-12-30', 'Filha'),
     ('12345678966', 'Elizabeth', 'F', '1967-05-05', 'Esposa');
+
+-- Liga FK pra experimentos posteriores (ex: tentar INSERT inválido)
+PRAGMA foreign_keys = ON;
 ```
+
+> **Importante:** SQLite só **lembra** do PRAGMA pela duração da conexão. Se fechar e reabrir o DB Browser, roda `PRAGMA foreign_keys = ON;` de novo no início da sessão.
 
 ### Confere se carregou
 
@@ -634,10 +653,8 @@ ORDER BY Qtd_proj DESC;
 SELECT P.Projnome, SUM(T.Horas) AS Total_horas
 FROM PROJETO AS P JOIN TRABALHA_EM AS T ON P.Projnumero = T.Pnr
 GROUP BY P.Projnumero, P.Projnome
-ORDER BY Total_horas DESC NULLS LAST;
+ORDER BY Total_horas DESC;
 ```
-
-> Em MariaDB tira o `NULLS LAST`.
 
 ### Q41 — Para cada projeto, total de horas e lista de quem trabalha
 
