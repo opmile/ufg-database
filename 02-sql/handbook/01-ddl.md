@@ -128,9 +128,9 @@ FK só pode referenciar tabela que **já existe**. Logo:
 
 ---
 
-## ⚠️ SQLite — Limitações de DDL
+## ⚠️ SQLite — Limitações (referência)
 
-SQLite (usado no hands-on) tem ALTER TABLE bem **restrito**:
+SQLite (caso use em outro contexto) tem ALTER TABLE **restrito**, diferente do PostgreSQL do hands-on:
 
 | Comando | SQLite | Padrão (Postgres/MariaDB) |
 |---------|--------|----------------------------|

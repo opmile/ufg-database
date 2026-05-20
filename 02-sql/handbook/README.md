@@ -39,31 +39,23 @@
 
 ## Ferramenta recomendada (desktop)
 
-**SQLite + DB Browser for SQLite** (local, sem internet):
+**PostgreSQL + pgAdmin**.
 
-### Instalação no macOS
+### Fluxo
 
-```bash
-brew install --cask db-browser-for-sqlite
-```
+1. Abre **pgAdmin**, conecta no servidor Postgres local.
+2. **Databases → Create → Database** → nome `bd_empresa`. Save.
+3. Seleciona o banco → **Tools → Query Tool** (ou ícone ⚡).
+4. Cola bloco Setup de `06-handson.md` → ▶ (F5).
+5. Queries novas: cola no Query Tool → ▶.
+6. Ver tabela direto: árvore → Schemas → public → Tables → clica direito → View/Edit Data.
 
-Ou baixa o `.dmg` em https://sqlitebrowser.org/dl/
+### Notas Postgres
 
-### Como usar
-
-1. Abre **DB Browser for SQLite**.
-2. **File → New Database** → escolhe nome (ex: `bd_empresa.db`) e local. Salva.
-3. Aparece dialog "Edit table definition" → **Cancela** (vamos criar via SQL).
-4. Vai pra aba **Execute SQL**.
-5. Cola o bloco SETUP de `06-handson.md` → clica ▶ (ou F5).
-6. **File → Write Changes** (Ctrl/Cmd+S) pra salvar.
-7. Cada query nova: cola na aba SQL → ▶. Pra ver tabela: aba **Browse Data** → seleciona tabela no dropdown.
-
-### Notas SQLite
-
-- SQLite é dinamicamente tipado — `VARCHAR(20)` vira `TEXT`, `NUMERIC(10,2)` vira `REAL/NUMERIC`. **Aceita a sintaxe** do padrão ANSI, então funciona pra estudo.
-- FK só é enforced se `PRAGMA foreign_keys = ON` — incluído no setup.
-- `ALTER TABLE ADD CONSTRAINT` **NÃO existe em SQLite** — declare constraint na CREATE.
-- `DROP TABLE ... CASCADE` **NÃO existe** — drop em ordem reversa.
+- Tipos respeitados (`VARCHAR(20)`, `NUMERIC(10,2)`, `CHAR(11)`).
+- FK enforced por padrão.
+- `ALTER TABLE ADD CONSTRAINT` funciona normal.
+- `DROP TABLE ... CASCADE` funciona normal.
+- `NULLS LAST` / `NULLS FIRST` em ORDER BY.
 
 > **Foco da avaliação:** escrever consultas SQL corretas. Não decorar derivação de álgebra. Saber resolver com SQL = ponto.

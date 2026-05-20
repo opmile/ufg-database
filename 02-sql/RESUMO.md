@@ -386,25 +386,23 @@ ORDER BY Media_Sal DESC;
 
 ---
 
-## 14. Hands-On Mínimo (SQLite + DB Browser)
+## 14. Hands-On Mínimo (PostgreSQL + pgAdmin)
 
 > Pula se já fez no `handbook/06-handson.md`. Senão usa esse setup compacto.
 
-### Setup
-```bash
-brew install --cask db-browser-for-sqlite
-```
+### Fluxo
 
-Abre → File → New Database → `bd.db` → Cancel dialog → aba Execute SQL → cola tudo:
+1. pgAdmin → conecta servidor local.
+2. Databases → Create → Database → `bd_empresa`.
+3. Tools → Query Tool. Cola tudo abaixo. ▶ (F5).
 
 ```sql
-PRAGMA foreign_keys = OFF;
-DROP TABLE IF EXISTS DEPENDENTE;
-DROP TABLE IF EXISTS TRABALHA_EM;
-DROP TABLE IF EXISTS PROJETO;
-DROP TABLE IF EXISTS LOCALIZACAO_DEP;
-DROP TABLE IF EXISTS FUNCIONARIO;
-DROP TABLE IF EXISTS DEPARTAMENTO;
+DROP TABLE IF EXISTS DEPENDENTE      CASCADE;
+DROP TABLE IF EXISTS TRABALHA_EM     CASCADE;
+DROP TABLE IF EXISTS PROJETO         CASCADE;
+DROP TABLE IF EXISTS LOCALIZACAO_DEP CASCADE;
+DROP TABLE IF EXISTS FUNCIONARIO     CASCADE;
+DROP TABLE IF EXISTS DEPARTAMENTO    CASCADE;
 
 CREATE TABLE DEPARTAMENTO (
     Dnumero INTEGER PRIMARY KEY,
@@ -424,6 +422,10 @@ CREATE TABLE FUNCIONARIO (
     Cpf_supervisor CHAR(11) REFERENCES FUNCIONARIO(Cpf),
     Dnr INTEGER NOT NULL REFERENCES DEPARTAMENTO(Dnumero)
 );
+ALTER TABLE DEPARTAMENTO
+    ADD CONSTRAINT FK_DEPTO_GERENTE
+    FOREIGN KEY (Cpf_gerente) REFERENCES FUNCIONARIO(Cpf);
+
 CREATE TABLE LOCALIZACAO_DEP (
     Dnumero INTEGER REFERENCES DEPARTAMENTO(Dnumero),
     Dlocal VARCHAR(20),
@@ -478,8 +480,6 @@ INSERT INTO DEPENDENTE VALUES
 ('33344555587','Janaina','F','1958-05-03','Esposa'),('98765432168','Antonio','M','1942-02-28','Marido'),
 ('12345678966','Michael','M','1988-01-04','Filho'),('12345678966','Alice','F','1988-12-30','Filha'),
 ('12345678966','Elizabeth','F','1967-05-05','Esposa');
-
-PRAGMA foreign_keys = ON;
 ```
 
 ### Top 10 queries pra fixar (executa cada uma e confere)
